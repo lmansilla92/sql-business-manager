@@ -30,13 +30,3 @@ CREATE TABLE employee (
     REFERENCES employee(id)
     ON DELETE SET NULL
 );
-
--- View all employees
--- SELECT * FROM employee;
--- Add employee
--- Update employee role
--- View all roles
--- Add Role
--- View all departments
--- Add department
--- Quit

@@ -23,4 +23,4 @@ VALUES ('John', 'Doe', 1, null),
        ('Malia', 'Brown', 6, 5),
        ('Sarah', 'Lourde', 7, 5),
        ('Tom', 'Allen', 8, null),
-       ('Sam', 'Kash', 9, 8);
+       ('Sam', 'Kash', 2, 1);
