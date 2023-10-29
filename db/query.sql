@@ -25,10 +25,10 @@ SET employee.role_id = 9
 WHERE employee.first_name  = 'Luis';
 
 
--- View all employees TODO
+-- View all employees
 SELECT emp.id, emp.first_name, emp.last_name, title, name AS department, salary, manager.first_name AS manager FROM employee AS emp
 JOIN role ON role.id = emp.role_id
 JOIN department ON department.id = role.department_id
-JOIN employee AS manager ON manager.id = emp.manager_id;
+LEFT JOIN employee manager on manager.id = emp.manager_id;
 
 -- Quit
