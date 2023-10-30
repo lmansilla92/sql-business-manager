@@ -63,6 +63,10 @@ function init(){
             case options[5]:
                 viewDept();
                 break;
+
+            case options[3]:
+                viewRoles();
+                break;
                 default:
                     return;
         }
@@ -87,5 +91,33 @@ viewDept = () => {
         .catch(console.log)
 }
 
+// Function that queries the database to View All Roles
+viewRoles = () => {
+    // Performs an async query to the database
+    dbCon.promise().query(`SELECT roles.id, roles.title, department.name AS department, roles.salary FROM role AS roles
+    JOIN department AS department ON roles.department_id = department.id
+    ORDER BY roles.title;`)
+        .then( ([rows,fields]) => {
+            //Logs the database information to the console in a formatted table
+            console.table('', rows);
+            //Triggers inquirer prompts after data output
+            init();
+        })
+}
+
 // Calls init function to trigger inquirer prompts to start the application
 init();
+
+// switch (answers.shape) {
+//     case 'Circle':
+//         answers.shape = new Circle(answers.shapeColor);
+//         break;
+//     case 'Triangle':
+//         answers.shape = new Triangle(answers.shapeColor);
+//         break;
+//     case 'Square':
+//         answers.shape = new Square(answers.shapeColor);
+//         break;
+//         default:
+//             return;
+// }
