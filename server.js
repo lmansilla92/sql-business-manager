@@ -60,12 +60,35 @@ function init(){
 
         // Use switch case to check which option the user selected
         switch (answer.main) {
-            case options[5]:
-                viewDept();
+            case options[0]:
+                viewEmployees();
                 break;
-
             case options[3]:
                 viewRoles();
+                break;
+            case options[3]:
+                viewRoles();
+                break;
+            case options[3]:
+                viewRoles();
+                break;
+            case options[3]:
+                viewRoles();
+                break;
+            case options[3]:
+                viewRoles();
+                break;
+            case options[3]:
+                viewRoles();
+                break;
+            case options[3]:
+                viewRoles();
+                break;
+            case options[3]:
+                viewRoles();
+                break;
+            case options[5]:
+                viewDept();
                 break;
                 default:
                     return;
@@ -78,6 +101,22 @@ function init(){
     });
 };
 
+// Function that queries the database to View All Employees
+viewEmployees = () => {
+    // Performs an async query to the database
+    dbCon.promise().query(`SELECT emp.id, emp.first_name, emp.last_name, title, name AS department, salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee AS emp
+    JOIN role ON role.id = emp.role_id
+    JOIN department ON department.id = role.department_id
+    LEFT JOIN employee manager on manager.id = emp.manager_id
+    ORDER BY emp.first_name;`)
+        .then( ([rows,fields]) => {
+            // Logs the database information to the console in a formatted table
+            console.table('', rows);
+            // Triggers inquirer prompts after data output
+            init();
+        });
+};
+
 // Function that queries the database to View All Departmants
 viewDept = () => {
     // Performs an async query to the database
@@ -88,8 +127,8 @@ viewDept = () => {
             // Triggers inquirer prompts after data output
             init();
         })
-        .catch(console.log)
-}
+        .catch(console.log);
+};
 
 // Function that queries the database to View All Roles
 viewRoles = () => {
@@ -103,7 +142,8 @@ viewRoles = () => {
             //Triggers inquirer prompts after data output
             init();
         })
-}
+        .catch(console.log);
+};
 
 // Calls init function to trigger inquirer prompts to start the application
 init();
