@@ -80,7 +80,7 @@ function init(){
                 viewDept();
                 break;
             case options[6]:
-                viewRoles();
+                addDept();
                 break;
             case options[7]:
                 viewRoles();
@@ -113,6 +113,30 @@ function init(){
         console.log(error);
     });
 };
+
+addDept = () => {
+    inquirer
+    .prompt([
+        {
+            type: 'input',
+            name: 'department',
+            message: 'Enter the department you would like to add.'
+        }
+    ])
+    .then((answer) => {
+        console.log('This is department: ', answer.department);
+        dbCon.query(`INSERT INTO department (name)
+        VALUES (?);`, answer.department, (err, result) => {
+            if (err) {
+              console.log(err);
+            }
+          });
+        console.log(`${answer.department} has been added to the database!`)
+       init();
+    })
+}
+
+
 
 
 // Add Employee function
@@ -163,11 +187,14 @@ addEmployee = () => {
             type: 'list',
             name: 'manager',
             message: "Select the new employee's manager",
-            choices: employees
+            choices: (() => {
+                if(!employees.includes('None'))
+                employees.push('None');
+            return employees;
+            })()
         }
     ])
     .then((answers) => {
-    
         let queryObj = {
             first_name: answers.first,
             last_name: answers.last,
@@ -186,6 +213,9 @@ addEmployee = () => {
                 }
             })()
         
+        }
+        if(answers.manager == 'None'){
+            queryObj.manager_id = null;
         }
         return queryObj;
     })
@@ -222,7 +252,7 @@ viewEmployees = () => {
     JOIN role ON role.id = emp.role_id
     JOIN department ON department.id = role.department_id
     LEFT JOIN employee manager on manager.id = emp.manager_id
-    ORDER BY emp.first_name;`)
+    ORDER BY emp.id;`)
         .then( ([rows,fields]) => {
             // Logs the database information to the console in a formatted table
             console.table('', rows);
