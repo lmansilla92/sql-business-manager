@@ -22,8 +22,8 @@ VALUES ('CEO', 300000, 5);
 
 -- Update employee role 
 UPDATE employee
-SET employee.role_id = 9
-WHERE employee.first_name  = 'Luis';
+SET employee.role_id = 8
+WHERE CONCAT(employee.first_name, ' ', employee.last_name) = 'Luis Mansilla';
 
 
 -- View all employees
