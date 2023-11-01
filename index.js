@@ -74,7 +74,7 @@ function init(){
                 viewRoles();
                 break;
             case options[4]:
-                viewRoles();
+                addRole();
                 break;
             case options[5]:
                 viewDept();
@@ -136,7 +136,81 @@ addDept = () => {
     })
 }
 
+// Function to add a role
+addRole = () => {
+    // Declares variables for the array of Department Objects and an array of departments
+    let deptObjArr;
+    let departments = []
 
+    // Async Query the database to get all data from department table
+    dbCon.promise().query(`SELECT * FROM department`)
+
+        .then( ([rows,fields]) => {
+            // Iterate through the query data results to store all department names 
+            for( let i = 0; i < rows.length; i++) {
+                departments.push(rows[i].name)
+            }
+            // Assigns deptObjArr the value of the array of objects that contain each department id and name
+            deptObjArr = rows;
+        })
+        .catch((error) => console.log(error));
+
+    // Prompts users with questions to obtain user input and selection
+    inquirer
+    .prompt([
+        {
+            type: 'input',
+            name: 'title',
+            message: "What is the name of the new role?"
+        },
+        {
+            type: 'input',
+            name: 'salary',
+            message: "What is the salary?"
+        },
+        {
+            type: 'list',
+            name: 'department',
+            message: "Which department does this role belong to?",
+            choices: departments 
+        }
+    ])
+    // .then promise chain that has a callback function which contains the answers from the inquirer prompt
+    .then((answers) => {
+        // Declares the queryObj that contains the information needed to add a new role
+        let queryObj = {
+            title: answers.title,
+            salary: answers.salary,
+            // Uses for loop to iterate through all department names and compares the department selected by the user
+            department_id: (() => {
+                for(let i = 0; i < deptObjArr.length; i++) {
+                    // If the user selected department name is the same as the current department in the iteration
+                    if (answers.department == deptObjArr[i].name){
+                        // Return the department id from the department objects array
+                        return deptObjArr[i].id;
+                    };
+                };
+            })()
+        };
+        // Return the query object defined in this .then call back function
+        return queryObj;
+    })
+    // .then promise chain that contains the query object returned from the previous .then
+    .then((queryObj) => {
+
+        // Queries the database to add a new role to the role table using a prepared statement
+        dbCon.query(`INSERT INTO role (title, salary, department_id)
+        VALUES (?, ?, ?);`, [queryObj.title, queryObj.salary, queryObj.department_id], (err, result) => {
+            if (err) {
+              console.log('logging error: ', err);
+            }
+          });
+        // Logs to the console if the new role was successfully added. 
+        console.log(`${queryObj.title} has been added to the database!`)
+       init();
+    })
+    .catch((error) => console.log('Logging error: ', error));
+}
 
 
 // Add Employee function
@@ -219,7 +293,7 @@ addEmployee = () => {
         }
         return queryObj;
     })
-        .then((queryObj) => {
+    .then((queryObj) => {
 
         dbCon.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) 
         VALUES (?, ?, ?, ?);`, [queryObj.first_name, queryObj.last_name, queryObj.role_id, queryObj.manager_id], (err, result) => {
