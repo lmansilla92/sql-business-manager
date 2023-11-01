@@ -101,7 +101,7 @@ function init(){
                 viewRoles();
                 break;
             case options[13]:
-                viewDept();
+                console.log('Insert function');
                 break;
                 default:
                     return;
@@ -113,6 +113,7 @@ function init(){
         console.log(error);
     });
 };
+
 
 addDept = () => {
     inquirer
@@ -134,6 +135,98 @@ addDept = () => {
         console.log(`${answer.department} has been added to the database!`)
        init();
     })
+}
+
+updateRole = () => {
+    // Declare global variables within this function
+    let empObjArr;
+    let roleObjArr;
+    let employees = [];
+    let roles = [];
+
+    // Async DB query to get all data from employee table
+    dbCon.promise().query(`SELECT * FROM employee`)
+        .then( ([rows,fields]) => {
+            // Iterate through data from employee table to push the first and last name of each employee into the employees array
+            for(let i = 0; i < rows.length; i++) {
+                employees.push(`${rows[i].first_name} ${rows[i].last_name}`);
+            }
+            // Assigns the data from the employee table into employee object array
+            empObjArr = rows;
+            return employees;
+        })
+
+    dbCon.promise().query(`SELECT * FROM role`)
+        .then( ([rows,fields]) => {
+            for(let i = 0; i < rows.length; i++) {
+                roles.push(rows[i].title);
+            }
+            roleObjArr = rows;
+            return roles;
+        })
+        .catch((error) => console.log(error))
+        .then( () => {
+
+            console.log('roles', roles);
+            console.log('employees', employees);
+            console.log('empObj: ', empObjArr);
+            console.log('roleObj: ', roleObjArr);
+
+            inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'employee',
+                    message: "Select employee to update their role.",
+                    choices: employees
+                },
+                {
+                    type: 'list',
+                    name: 'role',
+                    message: "Select new role.",
+                    choices: roles
+                }
+            ])
+
+        .then((answers) => {
+            // Declares the queryObj that contains the information needed to add a new role
+            let queryObj = {
+  
+                // Uses for loop to iterate through all department names and compares the department selected by the user
+                role_id: (() => {
+                    for(let i = 0; i < roleObjArr.length; i++) {
+                        // If the user selected department name is the same as the current department in the iteration
+                        if (answers.role == roleObjArr[i].title){
+                            // Return the department id from the department objects array
+                            return roleObjArr[i].id;
+                        };
+                    };
+                })(),
+                full_name: answers.employee
+            };
+            // Return the query object defined in this .then call back function
+            return queryObj;
+        })
+        // .then promise chain that contains the query object returned from the previous .then
+        .then((queryObj) => {
+
+            // Queries the database to add a new role to the role table using a prepared statement
+            dbCon.query(`UPDATE employee
+            SET employee.role_id = ?
+            WHERE CONCAT(employee.first_name, ' ', employee.last_name) = ?;`, [queryObj.role_id, queryObj.full_name], (err, result) => {
+                if (err) {
+                  console.log('logging error: ', err);
+                }
+              });
+            // Logs to the console if the new role was successfully added. 
+            console.log(`${queryObj.full_name} had their role updated!`)
+        init();
+        })
+        .catch((error) => console.log('Logging error: ', error));
+        })
+
+
+
 }
 
 // Function to add a role
