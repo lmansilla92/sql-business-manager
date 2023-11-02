@@ -1,3 +1,11 @@
+/*
+
+Query templates intended for development only
+
+*/
+
+/*
+
 -- QUERIES --
 
 -- View all departments
@@ -71,3 +79,4 @@ DELETE FROM employee WHERE CONCAT(first_name, ' ', last_name) = 'Luis Mansilla';
 
 -- Quit
 
+*/
