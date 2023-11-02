@@ -11,7 +11,9 @@ In this repository you will find the application code for an SQL Business Manage
 - Clone the repository.
 - In the intergrated terminal in your code editor, type npm install to install all the dependencies for this project.
 - Make sure to create a .env file in the root of your directory.
-- Inside the .env file type your database password after the = symbol like this: DB_PASSWORD=yourpassword.
+- Inside the .env file type your database password after the = symbol like this: DB_PASSWORD=yourpassword
+- There is a db folder that contains a query.sql and a schema.sql file. 
+- Open an integrated terminal and source in the schema followed by the seeds in order to input dummy information to use this application, otherwise create your own information by only sourcing the schema and not the seeds.
 - After all dependencies are installed simply type node index.js to start the application.
 
 ## Table of Contents
